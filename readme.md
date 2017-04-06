@@ -1,9 +1,11 @@
-# <center>나라장터 입찰공고 크롤링 프로그램</center>
-<center>[![N|Solid](http://www.g2b.go.kr/gov/koneps/pt/main/image/main/si_koneps_sub.png)](http://www.g2b.go.kr/index.jsp)</center><br><br>
+# [나라장터](http://www.g2b.go.kr/index.jsp) 입찰공고 크롤링 프로그램
+<br><br>
 <sub>[(English version below)](#korean-procurement-system-(narajangteo)-crawling-program) </sub><br><br>
 나라장터에 올라오는 입찰공고를 모니터링하기 위해 개발된 간단한 프로그램으로, 검색어 리스트를 설정하면 그에 따라 최근 7일간 공고된 입찰공고 리스트를 가져와 엑셀파일로 정리해줍니다. 크롤링 프로그램이지만, BeautifulSoup을 사용하지 않습니다. 
 
-Credit: 본 프로젝트의 Inspiration이 된 포스트입니다: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
+Credit: 본 프로젝트의 Inspiration이 된 포스트입니다: 
+- http://az001a.blog.me/220897788511
+- http://ifyourfriendishacker.tistory.com/2
 
 ## 선행 프로그램
 파이썬 (3.x) 을 구동하기 위해서 [Anaconda](https://www.continuum.io/downloads) 패키지 다운로드를 추천합니다. 파이썬 3.x 버전을 받아야 문제없이 작동됩니다. 
@@ -27,11 +29,13 @@ Credit: 본 프로젝트의 Inspiration이 된 포스트입니다: http://az001a
 	- 입력된 검색어에 따른 전체 리스트
 	- 전체 리스트에서 관심 기관명을 따로 필터링해 기관명 순서대로 나열된 리스트
 
-# <center>Korean procurement system (Narajangteo) crawling program</center>
-<center>[![N|Solid](http://www.g2b.go.kr/gov/koneps/pt/main/image/main/si_koneps_sub.png)](http://www.g2b.go.kr/index.jsp)</center><br><br>
+# Korean procurement system ([Narajangteo](http://www.g2b.go.kr/index.jsp)) crawling program
+<br><br>
 This is a simple program for scraping Korea's government bidding marketplace and returning an excel file with results of RFPs within 7 days, with selected key words. This does <b>not</b> use BeautifulSoup. 
 
-Credit: This project was inspired by the following blog posts: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
+Credit: This project was inspired by the following blog posts: 
+- http://az001a.blog.me/220897788511
+- http://ifyourfriendishacker.tistory.com/2
 
 ## Prerequisites
 
