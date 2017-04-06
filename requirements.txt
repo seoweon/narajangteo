@@ -1,9 +1,5 @@
+ipython
 html5lib
 pandas
 requests
-os
-datetime
-time
-string
 tqdm
-sqlite3
