@@ -22,9 +22,9 @@ Credit: 본 프로젝트의 Inspiration이 된 포스트입니다:
 
 ## 이용 방법
 1. 다음 repository 를 클론합니다. 
-2. [requirements 파일](https://github.com/seoweon/blob/master/requirements.txt)를 이용해 필요한 라이브러리를 설치합니다. (`pip install -r requirements.txt`)
-3. 검색하고자 하는 검색어를 [카테고리 텍스트파일](https://github.com/seoweon/blob/master/category.txt)에 추가합니다. (검색어는 "/"로 구분하며, 스페이스나 행바꿈을 하지 않도록 합니다)
-4. 특히 관심이 있는 기관이 따로 있다면 [기관 텍스트파일](https://github.com/seoweon/blob/master/orgs.txt)에 같은 방법으로 추가합니다. 순서도 관심도가 높은 순서로 넣어주면 그대로 정렬됩니다. 
+2. [requirements 파일](https://github.com/seoweon/narajangteo/blob/master/requirements.txt)를 이용해 필요한 라이브러리를 설치합니다. (`pip install -r requirements.txt`)
+3. 검색하고자 하는 검색어를 [카테고리 텍스트파일](https://github.com/seoweon/narajangteo/blob/master/category.txt)에 추가합니다. (검색어는 "/"로 구분하며, 스페이스나 행바꿈을 하지 않도록 합니다)
+4. 특히 관심이 있는 기관이 따로 있다면 [기관 텍스트파일](https://github.com/seoweon/narajangteo/blob/master/orgs.txt)에 같은 방법으로 추가합니다. 순서도 관심도가 높은 순서로 넣어주면 그대로 정렬됩니다. 
 5. command line을 열고 `ipython narajangteo_crawling.py` 명령을 넣어줍니다. 
 6. 프로그램이 작동되고 결과물로 엑셀파일이 두 개 생성됩니다. 
 	- 입력된 검색어에 따른 전체 리스트
@@ -55,9 +55,9 @@ You will need Python (3.x)
 
 ## How to use
 1. Clone this repository.
-2. Install all required libraries with the [requirements file](https://github.com/seoweon/blob/master/requirements.txt) `pip install -r requirements.txt`
-3. Put keywords that you want to search for in the [category text file](https://github.com/seoweon/blob/master/category.txt). (each keyword is separated with "/" and avoid using spaces or line breaks after keywords)
-4. If there are organizations that you are particularly interested in, you can add those names to the [org text file](https://github.com/seoweon/blob/master/orgs.txt) in the same way. The final list will be ordered to match the order of this list.  
+2. Install all required libraries with the [requirements file](https://github.com/seoweon/narajangteo/blob/master/requirements.txt) `pip install -r requirements.txt`
+3. Put keywords that you want to search for in the [category text file](https://github.com/seoweon/narajangteo/blob/master/category.txt). (each keyword is separated with "/" and avoid using spaces or line breaks after keywords)
+4. If there are organizations that you are particularly interested in, you can add those names to the [org text file](https://github.com/seoweon/narajangteo/blob/master/orgs.txt) in the same way. The final list will be ordered to match the order of this list.  
 5. Open your command line prompt and type `ipython narajangteo_crawling.py` 
 6. Once the program runs, you will end up with two excel files in the same file location: 
 	- The full list of results from search keywords
