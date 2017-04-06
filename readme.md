@@ -1,27 +1,59 @@
-# 나라장터 입찰공고 크롤링 프로그램
-[![N|Solid](http://www.g2b.go.kr/gov/koneps/pt/main/image/main/si_koneps_sub.png)](http://www.g2b.go.kr/index.jsp) 
-(English version below)
-나라장터에 올라오는 입찰공고를 모니터링하기 위해 개발된 간단한 프로그램으로, 검색어 리스트를 설정하면 그에 따라 최근 7일간 공고된 입찰공고 리스트를 가져와 엑셀파일로 정리해줍니다. 
+# <center>나라장터 입찰공고 크롤링 프로그램</center>
+<center>[![N|Solid](http://www.g2b.go.kr/gov/koneps/pt/main/image/main/si_koneps_sub.png)](http://www.g2b.go.kr/index.jsp)</center><br><br>
+<sub>[(English version below)](#korean-procurement-system-(narajangteo)-crawling-program) </sub><br><br>
+나라장터에 올라오는 입찰공고를 모니터링하기 위해 개발된 간단한 프로그램으로, 검색어 리스트를 설정하면 그에 따라 최근 7일간 공고된 입찰공고 리스트를 가져와 엑셀파일로 정리해줍니다. 크롤링 프로그램이지만, BeautifulSoup을 사용하지 않습니다. 
 
-본 프로젝트의 Inspiration이 된 포스트입니다: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
+Credit: 본 프로젝트의 Inspiration이 된 포스트입니다: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
 
+## 선행 프로그램
+파이썬 (3.x) 을 구동하기 위해서 [Anaconda](https://www.continuum.io/downloads) 패키지 다운로드를 추천합니다. 파이썬 3.x 버전을 받아야 문제없이 작동됩니다. 
 
-# Korean e-procurement system (Narajangteo) crawling program
+## 이 프로그램에 사용된 라이브러리
+- [pandas](http://pandas.pydata.org/pandas-docs/stable/) 
+- [requests](http://docs.python-requests.org/en/master/) 
+- [os](https://docs.python.org/2/library/os.html) 
+- [datetime](https://docs.python.org/2/library/datetime.html) 
+- [time](https://docs.python.org/2/library/time.html) 
+- [string](https://docs.python.org/2/library/string.html) 
+- [tqdm](https://pypi.python.org/pypi/tqdm) (필수는 아니고, 기왕이면 다홍치마 :))
+- (개발 예정) [sqlite3](https://docs.python.org/3/library/sqlite3.html) 
 
-This is a simple program for scraping Korea's government bidding marketplace and returning an excel file with results of RFPs within 7 days, with selected key words. 
+## 이용 방법
+1. 다음 repository 를 클론합니다. 
+2. 검색하고자 하는 검색어를 [카테고리 텍스트파일](\category.txt)에 추가합니다. (검색어는 "/"로 구분하며, 스페이스나 행바꿈을 하지 않도록 합니다)
+3. 특히 관심이 있는 기관이 따로 있다면 [기관 텍스트파일](\orgs.txt)에 같은 방법으로 추가합니다. 순서도 관심도가 높은 순서로 넣어주면 그대로 정렬됩니다. 
+4. command line을 열고 `ipython narajangteo_crawling.py` 명령을 넣어줍니다. 
+5. 프로그램이 작동되고 결과물로 엑셀파일이 두 개 생성됩니다. 
+	- 입력된 검색어에 따른 전체 리스트
+	- 전체 리스트에서 관심 기관명을 따로 필터링해 기관명 순서대로 나열된 리스트
 
-Inspired by: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
+# <center>Korean procurement system (Narajangteo) crawling program</center>
+<center>[![N|Solid](http://www.g2b.go.kr/gov/koneps/pt/main/image/main/si_koneps_sub.png)](http://www.g2b.go.kr/index.jsp)</center><br><br>
+This is a simple program for scraping Korea's government bidding marketplace and returning an excel file with results of RFPs within 7 days, with selected key words. This does <b>not</b> use BeautifulSoup. 
+
+Credit: This project was inspired by the following blog posts: http://az001a.blog.me/220897788511, http://ifyourfriendishacker.tistory.com/2
 
 ## Prerequisites
 
-If you don't have it already, please download Python (3.x recommended) from Anaconda (https://www.continuum.io/downloads). 
+If you don't have it already, please download Python (3.x recommended) from [Anaconda](https://www.continuum.io/downloads). 
 You will need Python (3.x)
 
-Specific libraries: 
-- pandas
-- requests
-- os
-- datetime, time
-- tqem
-- (Beautifulsoup)
-- (sys)
+## Specific libraries: 
+- [pandas](http://pandas.pydata.org/pandas-docs/stable/) 
+- [requests](http://docs.python-requests.org/en/master/) 
+- [os](https://docs.python.org/2/library/os.html) 
+- [datetime](https://docs.python.org/2/library/datetime.html) 
+- [time](https://docs.python.org/2/library/time.html) 
+- [string](https://docs.python.org/2/library/string.html) 
+- [tqdm](https://pypi.python.org/pypi/tqdm) (just for the extra flair :))
+- (planned for future) [sqlite3](https://docs.python.org/3/library/sqlite3.html) 
+
+## How to use
+1. Clone this repository.  
+2. Put keywords that you want to search for in the [category text file](\category.txt). (each keyword is separated with "/" and avoid using spaces or line breaks after keywords)
+3. If there are organizations that you are particularly interested in, you can add those names to the [org text file](\orgs.txt) in the same way. The final list will be ordered to match the order of this list.  
+4. Open your command line prompt and type `ipython narajangteo_crawling.py` 
+5. Once the program runs, you will end up with two excel files in the same file location: 
+	- The full list of results from search keywords
+	- The filtered list of organizations of interest, ordered respectively
+
