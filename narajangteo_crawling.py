@@ -1,9 +1,14 @@
 
 # coding: utf-8
 
-# In[12]:
+# # <center> 나라장터 입찰공고 크롤링 with Python3</center>
+# 
+# 나라장터에 올라오는 입찰공고를 모니터링하기 위해 개발된 간단한 프로그램으로, 검색어 리스트를 설정하면 그에 따라 최근 7일간 공고된 입찰공고 리스트를 가져와 엑셀파일로 정리해줍니다. 크롤링 프로그램이지만, BeautifulSoup을 사용하지 않습니다.
+
+# In[23]:
 
 import pandas as pd
+import numpy as np
 import requests
 import os
 import datetime, time
@@ -11,9 +16,10 @@ import string
 from time import localtime, strftime
 from datetime import timedelta
 from tqdm import tqdm
+from xlsxwriter.utility import xl_col_to_name, xl_range
 
 
-# In[2]:
+# In[27]:
 
 class KoreaPageScraper(object):
     def __init__(self):
@@ -42,12 +48,12 @@ class KoreaPageScraper(object):
         bidno = num_split[0]
         if len(bidno) == 11:
             bidseq = num_split[-1]
-            bidurl = "http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno="+bidno+"&bidseq="+bidseq
+            bidurl = '''=HYPERLINK("http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno='''+bidno+'''&bidseq='''+bidseq+'''","Click link")'''
             return bidurl
         else: 
             return "Check organization website (공고기관) for details"
         bidseq = refnum_split[-1]
-        bidurl = "http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno="+bidno+"&bidseq="+bidseq
+        bidurl = '''=HYPERLINK("http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno='''+bidno+'''&bidseq='''+bidseq+'''","Click link")'''
         return bidurl
 
     def scrape_categories(self, categories):
@@ -61,11 +67,12 @@ class KoreaPageScraper(object):
         urlist=[]
         for index,row in appended_df.iterrows():
             urlist.append(self.get_bidurl(row['공고번호-차수']))
+            
         appended_df['url']=urlist
         return appended_df
 
 
-# In[3]:
+# In[28]:
 
 def txt_reader(name):
     with open(name+".txt",'rb') as f:
@@ -73,7 +80,7 @@ def txt_reader(name):
         return line.decode('utf-8').split('/')
 
 
-# In[4]:
+# In[29]:
 
 #load the categories
 category_list = txt_reader('category')
@@ -84,7 +91,12 @@ myscraper = KoreaPageScraper()
 df = myscraper.scrape_categories(category_list)
 
 
-# In[5]:
+# In[30]:
+
+df
+
+
+# In[31]:
 
 def clean_up(df):
     #Delete duplicates (more than two keywords together)
@@ -97,7 +109,7 @@ def clean_up(df):
     return df
 
 
-# In[6]:
+# In[32]:
 
 def filter_prioritize(df,filter_list,column):
     new_df = df[df[column].isin(filter_list)].copy()
@@ -106,60 +118,123 @@ def filter_prioritize(df,filter_list,column):
     return new_df
 
 
-# In[7]:
+# In[48]:
 
-def to_excel(df,subtitle):
-    #Next step, format the excel file
-    print("saving the "+subtitle+" list...")
-    docname = "RMS-나라장터_입찰공고-"+subtitle+"-"+str(strftime("%y%m%d(%H%M%S)", localtime()))+".xlsx"
-    writer = pd.ExcelWriter(docname)
-    df.to_excel(writer,index=False,sheet_name='Sheet1')
-    workbook  = writer.book
-    worksheet = writer.sheets['Sheet1']
+class create_excel(object):
+    def get_length(self,column):
+        ##
+        ##This line is the problem!!
+        ##
+        valueex = column[~column.isnull()].reset_index(drop=True)[0]
+        if type(valueex) == str:
+            if valueex.startswith('=HYPERLINK'):
+                return len('Click link')
+            else: 
+                len_list = list(column.dropna().apply(lambda x: len(str(x))))
+                maxlen = max(len_list)
+                medlen = np.median(len_list)
+                meanlen = np.mean(len_list)
+                diff = maxlen-medlen
+                stdlen = np.std(len_list)
+                #min(A,B+C*numchars)
+                if maxlen < 10:
+                    return maxlen+5
+                elif diff > 50:
+                    if medlen == 0:
+                        return min(55,meanlen+5)
+                    return medlen
+                elif maxlen < 50:
+                    return meanlen+15
+                else:
+                    return 50
+        else:
+            return 5
 
-    # Set the column width and format.
-    columns=['A:A','B:B','D:D','H:H','L:L','M:M']
-    widths=[4,15,60,8,15,15]
-    for c,w in zip(columns,widths):
-        worksheet.set_column(c, w)
+    def to_excel(self,df,name):
+        #Next step, format the excel file
+        print("saving the "+name+" list...")
+        docname = "나라장터_입찰공고-"+name+"-"+str(strftime("%y%m%d(%H%M%S)", localtime()))+".xlsx"
+        #make the destination directory, but guard against race condition
+        if not os.path.exists(name):
+            try:
+                os.makedirs(name)
+            except OSError as exc: 
+                print(exc)
+                raise Exception('something failed')
+        writer = pd.ExcelWriter("%s/%s"%(name,docname), engine='xlsxwriter')
+        df.to_excel(writer,index=False,sheet_name='Sheet1')
+        workbook  = writer.book
+        worksheet = writer.sheets['Sheet1']
+        tablerange = xl_range(0,0,len(df),len(df.columns)-1)
+        headerrange = xl_range(0,0,0,len(df.columns)-1)
+        contentrange = xl_range(1,0,len(df),len(df.columns)-1)
 
-    #Formatting for putting in the header titles
-    table_headers = [{'header':c} for c in  df.columns]
-    #Getting the last column
-    lastcol = list(string.ascii_uppercase)[len(df.columns)-1]
+        #Formatting headers
+        header_format = workbook.add_format({'bg_color':'black'})
+        column_format = workbook.add_format({'bottom':True,'bg_color':'white'})
+        link_format = workbook.add_format({'font_color':'#157993','underline':True})
+        
+        # Set the column width and format.
+        columns = []
+        widths = []
+        for i in range(0,len(df.columns)):
+            a = xl_col_to_name(i)+":"+xl_col_to_name(i)
+            columns.append(a)
+            widths.append(self.get_length(df[df.columns[i]])) 
+        
+        for c,w in zip(columns,widths):
+            worksheet.set_column(c, w)
+        
+        worksheet.conditional_format(contentrange,{'type':'no_errors',
+                                                   'format':column_format})
+        worksheet.conditional_format(headerrange,{'type':'no_errors',
+                                                  'format':header_format})
+        worksheet.conditional_format(tablerange,{'type':'text',
+                                                 'criteria':'containing',
+                                                 'value':'Click link',
+                                                 'format':link_format})
+           
+        #Formatting for putting in the header titles
+        table_headers = [{'header':c} for c in  df.columns]
+        #Create a table with the data
+        worksheet.add_table(tablerange,{'columns' : table_headers})         
+        
+        writer.save()
+        return
 
-    worksheet.add_table('A1:%c%d'%(lastcol,len(df)+1),{'columns' : table_headers})
-    writer.save()
-    return
 
-
-# In[8]:
+# In[49]:
 
 clean_df = clean_up(df)
 
 
-# In[9]:
+# In[50]:
 
 #Get the target organization list
 org_list = txt_reader('orgs')
 
 
-# In[10]:
+# In[51]:
 
 org_df = filter_prioritize(clean_df,org_list,'공고기관')
 
 
-# In[15]:
+# In[52]:
 
-to_excel(clean_df,'all')
-
-
-# In[13]:
-
-to_excel(org_df,'orgs')
+go_to_excel = create_excel()
 
 
-# In[14]:
+# In[53]:
+
+go_to_excel.to_excel(clean_df,'full')
+
+
+# In[54]:
+
+go_to_excel.to_excel(org_df,'orgs')
+
+
+# In[55]:
 
 print ('All done! Please hit Enter to exit this command prompt. ')
 input()
