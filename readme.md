@@ -7,6 +7,13 @@ Credit: 본 프로젝트의 Inspiration이 된 포스트입니다:
 - http://az001a.blog.me/220897788511
 - http://ifyourfriendishacker.tistory.com/2
 
+#### 최근 업데이트 사항 | Latest updates
+- [exclude.txt](https://github.com/seoweon/narajangteo/blob/master/exclude.txt) 파일을 추가하여 제외하고자 하는 키워드를 설정할 수 있습니다. 
+<br>
+Added [exclude.txt](https://github.com/seoweon/narajangteo/blob/master/exclude.txt) so that you can define keywords that you would want to exclude from the results
+- command line print message를 추가하여 프로그램이 무엇을 하고 있는지 확인할 수 있습니다 (삭제되는 entry의 수 등)
+<br> Added command line print messages to monitor what's going on while the program is running (like how many entries are being deleted and such)
+
 ## 선행 프로그램
 파이썬 (3.x) 을 구동하기 위해서 [Anaconda](https://www.continuum.io/downloads) 패키지 다운로드를 추천합니다. 파이썬 3.x 버전을 받아야 문제없이 작동됩니다. 
 
@@ -25,7 +32,7 @@ Credit: 본 프로젝트의 Inspiration이 된 포스트입니다:
 2. [requirements 파일](https://github.com/seoweon/narajangteo/blob/master/requirements.txt)를 이용해 필요한 라이브러리를 설치합니다. (`pip install -r requirements.txt`)
 3. 검색하고자 하는 검색어를 [카테고리 텍스트파일](https://github.com/seoweon/narajangteo/blob/master/category.txt)에 추가합니다. (검색어는 "/"로 구분하며, 스페이스나 행바꿈을 하지 않도록 합니다)
 4. 특히 관심이 있는 기관이 따로 있다면 [기관 텍스트파일](https://github.com/seoweon/narajangteo/blob/master/orgs.txt)에 같은 방법으로 추가합니다. 순서도 관심도가 높은 순서로 넣어주면 그대로 정렬됩니다. 
-5. command line을 열고 `ipython narajangteo_crawling.py` 명령을 넣어줍니다. 
+5. command line을 열고 `python narajangteo_crawling.py` 명령을 넣어줍니다. 
 6. 프로그램이 작동되고 결과물로 엑셀파일이 두 개 생성됩니다. 
 	- 입력된 검색어에 따른 전체 리스트
 	- 전체 리스트에서 관심 기관명을 따로 필터링해 기관명 순서대로 나열된 리스트
@@ -58,7 +65,7 @@ You will need Python (3.x)
 2. Install all required libraries with the [requirements file](https://github.com/seoweon/narajangteo/blob/master/requirements.txt) `pip install -r requirements.txt`
 3. Put keywords that you want to search for in the [category text file](https://github.com/seoweon/narajangteo/blob/master/category.txt). (each keyword is separated with "/" and avoid using spaces or line breaks after keywords)
 4. If there are organizations that you are particularly interested in, you can add those names to the [org text file](https://github.com/seoweon/narajangteo/blob/master/orgs.txt) in the same way. The final list will be ordered to match the order of this list.  
-5. Open your command line prompt and type `ipython narajangteo_crawling.py` 
+5. Open your command line prompt and type `python narajangteo_crawling.py` 
 6. Once the program runs, you will end up with two excel files in the same file location: 
 	- The full list of results from search keywords
 	- The filtered list of organizations of interest, ordered respectively
