@@ -5,7 +5,7 @@
 # 
 # 나라장터에 올라오는 입찰공고를 모니터링하기 위해 개발된 간단한 프로그램으로, 검색어 리스트를 설정하면 그에 따라 최근 7일간 공고된 입찰공고 리스트를 가져와 엑셀파일로 정리해줍니다. 크롤링 프로그램이지만, BeautifulSoup을 사용하지 않습니다.
 
-# In[23]:
+# In[18]:
 
 import pandas as pd
 import numpy as np
@@ -17,9 +17,10 @@ from time import localtime, strftime
 from datetime import timedelta
 from tqdm import tqdm
 from xlsxwriter.utility import xl_col_to_name, xl_range
+from lxml import html
 
 
-# In[27]:
+# In[6]:
 
 class KoreaPageScraper(object):
     def __init__(self):
@@ -38,26 +39,30 @@ class KoreaPageScraper(object):
         return url
 
     def scrape_cat(self,cat):
+        '''searches for each category'''
         cat_url = self.request_url(cat)
         df = pd.read_html(cat_url)[0]
         df['search_term']=cat
         return df
     
     def get_bidurl(self,bidnum):
+        '''gets the bid url based on the bid registration number 
+        (ones that do not have a proper bid registration number usually doesn't have a corresponding link and would ask the user to go to the organization website for more informatioin)'''
         num_split = str(bidnum).split(sep='-')
         bidno = num_split[0]
         if len(bidno) == 11:
             bidseq = num_split[-1]
-            bidurl = '''=HYPERLINK("http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno='''+bidno+'''&bidseq='''+bidseq+'''","Click link")'''
+            bidurl = "http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno="+bidno+"&bidseq="+bidseq
             return bidurl
         else: 
             return "Check organization website (공고기관) for details"
         bidseq = refnum_split[-1]
-        bidurl = '''=HYPERLINK("http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno='''+bidno+'''&bidseq='''+bidseq+'''","Click link")'''
+        bidurl = "http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno="+bidno+"&bidseq="+bidseq
         return bidurl
 
     def scrape_categories(self, categories):
-        #add a slight delay betweeen scrapes: time.sleep(1)
+        '''scrapes each keyword and compiles it into a list. 
+        There is a 1 second delay between each search term to prevent getting blocked out of the site'''
         appended_df = []
         for category in tqdm(categories):
             one_df = self.scrape_cat(category)
@@ -72,44 +77,72 @@ class KoreaPageScraper(object):
         return appended_df
 
 
-# In[28]:
+# In[7]:
 
+#function to read txt files and parse the list
 def txt_reader(name):
     with open(name+".txt",'rb') as f:
         line = f.readline()
         return line.decode('utf-8').split('/')
 
 
-# In[29]:
+# In[8]:
 
-#load the categories
+#load the categories with the txt_reader function
 category_list = txt_reader('category')
+print("Getting the list of given keywords: " +str(category_list).replace('[','').replace(']','').replace("'",""))
 
-#scrape!
+#scrape with the "KoreaPageScraper" class
 myscraper = KoreaPageScraper()
 
 df = myscraper.scrape_categories(category_list)
 
 
-# In[30]:
+# In[42]:
 
-df
+print(str(len(df))+" results have been found. ")
 
 
-# In[31]:
+# In[11]:
+
+#Load the excluding keywords
+with open('exclude.txt','rb') as f:
+    line = f.readline()
+    contains_excluding = line.decode('utf-8').replace('/','|')
+
+
+# In[40]:
+
+print("Excluding the list of given keywords: "+str(txt_reader('exclude')).replace('[','').replace(']','').replace("'",""))
+
+
+# In[43]:
+
+#Deleting the excluding keywords and informing how many lines were deleted. 
+og = len(df)
+df = df[-df.공고명.str.contains(contains_excluding).fillna(True)]
+print("Deleted "+str(og-len(df))+" entries with keywords to exclude. (Currently at "+str(len(df))+" entries)")
+
+
+# In[53]:
 
 def clean_up(df):
     #Delete duplicates (more than two keywords together)
+    og2 = len(df)
     df = df[~df.duplicated(['공고명'])].copy()
+    print(str(og2-len(df))+" duplicates were found and deleted (Currently at "+str(len(df))+" entries)")
     #Divide the register date and due date
     df['register_date'],df['duedate'] = df['입력일시(입찰마감일시)'].str.split('(', 1).str
     df['duedate']=df['duedate'].str.replace(')','').replace('-','')
     df = df.drop('입력일시(입찰마감일시)',axis=1)
-    df = df.sort_values(by='duedate',ascending=False)
+    #Sort the values by duedate. To sort with a different value, change the following line's 'duedate' with the column name you desire to sort it by. 
+    column_sort = 'duedate'
+    df = df.sort_values(by=column_sort,ascending=False)
+    print("Values are sorted by the column '"+column_sort+"'. To change this, please talk to the tool owner. ")
     return df
 
 
-# In[32]:
+# In[45]:
 
 def filter_prioritize(df,filter_list,column):
     new_df = df[df[column].isin(filter_list)].copy()
@@ -118,7 +151,21 @@ def filter_prioritize(df,filter_list,column):
     return new_df
 
 
-# In[48]:
+# In[54]:
+
+#Cleaning up the df to make more sense
+clean_df = clean_up(df)
+
+
+# In[55]:
+
+#Get the target organization list
+org_list = txt_reader('orgs')
+print("Getting the entries from target organization list: "+str(org_list).replace('[','').replace(']','').replace("'",""))
+org_df = filter_prioritize(clean_df,org_list,'공고기관')
+
+
+# In[56]:
 
 class create_excel(object):
     def get_length(self,column):
@@ -203,38 +250,22 @@ class create_excel(object):
         return
 
 
-# In[49]:
-
-clean_df = clean_up(df)
-
-
-# In[50]:
-
-#Get the target organization list
-org_list = txt_reader('orgs')
-
-
-# In[51]:
-
-org_df = filter_prioritize(clean_df,org_list,'공고기관')
-
-
-# In[52]:
+# In[57]:
 
 go_to_excel = create_excel()
 
 
-# In[53]:
+# In[58]:
 
 go_to_excel.to_excel(clean_df,'full')
 
 
-# In[54]:
+# In[59]:
 
 go_to_excel.to_excel(org_df,'orgs')
 
 
-# In[55]:
+# In[60]:
 
 print ('All done! Please hit Enter to exit this command prompt. ')
 input()
