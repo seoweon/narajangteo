@@ -8,6 +8,8 @@ Credit: 본 프로젝트의 Inspiration이 된 포스트입니다:
 - http://ifyourfriendishacker.tistory.com/2
 
 #### 최근 업데이트 사항 | Latest updates
+- 가격 정보를 확인할 수 있게 코드를 업데이트하였습니다. 
+- 한글로 된 설명을 추가해서 좀 더 친절해졌습니다. 
 - [exclude.txt](https://github.com/seoweon/narajangteo/blob/master/exclude.txt) 파일을 추가하여 제외하고자 하는 키워드를 설정할 수 있습니다. (Added [exclude.txt](https://github.com/seoweon/narajangteo/blob/master/exclude.txt) so that you can define keywords that you would want to exclude from the results)
 - command line print message를 추가하여 프로그램이 무엇을 하고 있는지 확인할 수 있습니다 (삭제되는 entry의 수 등) (Added command line print messages to monitor what's going on while the program is running (like how many entries are being deleted and such))
 
